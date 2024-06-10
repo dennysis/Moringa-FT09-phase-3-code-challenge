@@ -48,6 +48,21 @@ class Magazine:
         cursor.execute("SELECT * FROM articles WHERE magazine_id = ?", (self._id,))
         articles_data = cursor.fetchall()
         return articles_data
+    
+
+    
+    
+
+    def authors(self, cursor):
+        # getting a list of authors who have contributed to a magazine
+        cursor.execute("""
+            SELECT authors.*
+            FROM authors
+            JOIN articles ON authors.id = articles.author_id
+            WHERE articles.magazine_id = ?
+        """, (self._id,))
+        authors_data = cursor.fetchall()
+        return authors_data if authors_data else None
 
     def contributors(self, cursor):
         # getting a list of authors who have contributed to a magazine
@@ -65,6 +80,14 @@ class Magazine:
         cursor.execute("SELECT title FROM articles WHERE magazine_id = ?", (self._id,))
         titles = [row[0] for row in cursor.fetchall()]
         return titles if titles else None
+    
+
+    def __repr__(self):
+        return f"Magazine({self._id}, '{self._name}', '{self._category}')"
+    
+
+    def __eq__(self, other):
+        return self._id == other._id and self.name == other.name and self.category == other.category
 
     def contributing_authors(self, cursor):
         # getting a list of authors who have contributed more than two articles to a magazine
@@ -79,7 +102,7 @@ class Magazine:
         authors_data = cursor.fetchall()
         return authors_data if authors_data else None
 
-
+    
       
          
         

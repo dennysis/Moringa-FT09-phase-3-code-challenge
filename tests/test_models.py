@@ -6,20 +6,24 @@ from models.magazine import Magazine
 
 class TestModels(unittest.TestCase):
     def setUp(self):
-        #creating a Mocking for database cursor
+        # Creating a mock for database cursor    #python app.py
         self.cursor = MagicMock()
 
     def test_author_creation(self):
         author = Author(1, "John Doe")
         self.assertEqual(author.name, "John Doe")
 
-    def test_article_creation(self):
+    def test_title(self):
         article = Article(1, "Test Title", "Test Content", 1, 1)
         self.assertEqual(article.title, "Test Title")
 
     def test_magazine_creation(self):
         magazine = Magazine(1, "Tech Weekly", "Technology")
         self.assertEqual(magazine.name, "Tech Weekly")
+
+    def test_article_creation(self):
+        article = Article(1, "Test Title", "Test Content", 1, 1)
+        self.assertEqual(article.title, "Test Title")
 
     def test_create_author(self):
         author = Author(None, "John Doe")
@@ -28,7 +32,7 @@ class TestModels(unittest.TestCase):
 
     def test_get_all_authors(self):
         # Mocking database response
-        self.cursor.fetchall.return_value = [(1, "John Doe"), (2, "John Doe")]
+        self.cursor.fetchall.return_value = [(1, "John Doe"), (2, "John Smith")]
         authors = Author.get_all_authors(self.cursor)
         # Checking if execute method was called with correct argument
         self.cursor.execute.assert_called_once_with("SELECT * FROM authors")
@@ -37,7 +41,7 @@ class TestModels(unittest.TestCase):
         self.assertEqual(authors[0].id, 1)
         self.assertEqual(authors[0].name, "John Doe")
         self.assertEqual(authors[1].id, 2)
-        self.assertEqual(authors[1].name, "John Doe")
+        self.assertEqual(authors[1].name, "John Smith")
 
     def test_articles(self):
         # Mocking database response
@@ -48,8 +52,8 @@ class TestModels(unittest.TestCase):
         self.cursor.execute.assert_called_once_with("SELECT * FROM articles WHERE author_id = ?", (1,))
         # Checking if articles were fetched correctly
         self.assertEqual(len(articles), 1)
-        self.assertEqual(articles[0][0], 1) 
-        self.assertEqual(articles[0][1], "Test Article") 
+        self.assertEqual(articles[0][0], 1)
+        self.assertEqual(articles[0][1], "Test Article")
 
     def test_magazines(self):
         # Mocking database response
@@ -65,8 +69,42 @@ class TestModels(unittest.TestCase):
         """, (1,))
         # Checking if magazines were fetched correctly
         self.assertEqual(len(magazines), 1)
-        self.assertEqual(magazines[0][0], 1)  
-        self.assertEqual(magazines[0][1], "Tech Magazine") 
+        self.assertEqual(magazines[0][0], 1)
+        self.assertEqual(magazines[0][1], "Tech Magazine")
+
+
+    def test_get_title(self):
+        # Mocking database response
+        self.cursor.fetchall.return_value = [("Test Article",)]
+        titles = Article.get_title(self.cursor)
+        # Checking if execute method was called with correct argument
+        self.cursor.execute.assert_called_once_with("SELECT title FROM articles")
+        # Checking if titles were fetched correctly
+        self.assertEqual(len(titles), 1)
+        self.assertEqual(titles[0], "Test Article")
+
+
+  
+    def test_magazine_repr(self):
+        magazine = Magazine(1, "Tech Weekly", "Technology")
+        self.assertEqual(magazine.__repr__(), "Magazine(1, 'Tech Weekly', 'Technology')")
+
+    def test_article_repr(self):
+        article = Article(1, "Test Article", "Test Content", 1, 1)
+        self.assertEqual(article.__repr__(), "Article(1, 'Test Article', 'Test Content', 1, 1)")
+
+    def test_name_immutable(self):
+        author = Author(1, "John Doe")
+        with self.assertRaises(AttributeError):
+            author.name = "Jane Doe"
+    
+    def test_author_repr(self):
+        author = Author(1, "John Doe")
+        self.assertEqual(author.__repr__(), "Author(1, 'John Doe')")
+
+    def test_name_repr(self):
+        author = Author(1, "John Doe")
+        self.assertEqual(author.__repr__(), "Author(1, 'John Doe')")
 
 if __name__ == "__main__":
     unittest.main()

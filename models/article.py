@@ -35,6 +35,12 @@ class Article:
         titles = cursor.fetchall()
         return [title[0] for title in titles] if titles else None
 
+    def get_all_articles(self):
+        # getting all article titles
+        cursor.execute("SELECT title FROM articles")
+        titles = cursor.fetchall()
+        return [title[0] for title in titles] if titles else None
+    
 
     def get_author(self, cursor):
         # getting the name of the author associated with the article 
@@ -48,3 +54,9 @@ class Article:
         cursor.execute("SELECT name FROM magazines WHERE id = ?", (self._magazine_id,))
         magazine_name = cursor.fetchone()
         return magazine_name[0] if magazine_name else None
+    
+    def __repr__(self):
+        return f"Article({self._id}, '{self.title}', '{self.content}', {self._author_id}, {self._magazine_id})"
+    
+    def __eq__(self, other):
+        return self._id == other._id and self.title == other.title and self.content == other.content and self._author_id == other._author_id and self._magazine_id == other._magazine_id

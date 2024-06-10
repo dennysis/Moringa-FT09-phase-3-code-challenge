@@ -38,6 +38,17 @@ class Author:
         cursor.execute("SELECT * FROM articles WHERE author_id = ?", (self._id,))
         articles_data = cursor.fetchall()
         return articles_data
+    
+    def get_all_articles(self):
+        # getting all articles associated with a specific author
+        cursor.execute("SELECT * FROM articles WHERE author_id = ?", (self._id,))
+        articles_data = cursor.fetchall()
+        return articles_data
+    
+    def get_all_articles(cursor):
+        cursor.execute("SELECT * FROM articles")
+        return cursor.fetchall()
+    
 
     def magazines(self, cursor):
          # getting all magazines associated with a specific author
@@ -50,4 +61,11 @@ class Author:
         magazines_data = cursor.fetchall()
         return magazines_data
 
-   
+    def __repr__(self):
+        return f"Author({self._id}, '{self._name}')"
+    
+
+    
+    def get_author(author_id, cursor):
+        cursor.execute("SELECT * FROM authors WHERE id = %s", (author_id,))
+        return cursor.fetchone()
